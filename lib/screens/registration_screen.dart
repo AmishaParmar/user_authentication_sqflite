@@ -98,8 +98,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter email';
+                            if (value==null||value.trim().isEmpty|| !value.contains("@")) {
+                              return 'Please enter valid email';
                             }
                             return null;
                           },
@@ -150,8 +150,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter password';
+                            if (value==null||value.trim().length<5) {
+                              return 'Please enter password of at least 5 characters long';
                             }
                             return null;
                           },

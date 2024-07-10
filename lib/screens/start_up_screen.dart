@@ -63,7 +63,7 @@ class _StartUpState extends State<StartUp> {
                     ),
                     onPressed: () {
                       Navigator.of(context)
-                          .pushReplacement(MaterialPageRoute(builder: (context) {
+                          .push(MaterialPageRoute(builder: (context) {
                         return const RegistrationScreen();
                       }));
                     },
@@ -90,7 +90,7 @@ class _StartUpState extends State<StartUp> {
                     ),
                     onPressed: () {
                       Navigator.of(context)
-                          .pushReplacement(MaterialPageRoute(builder: (context) {
+                          .push(MaterialPageRoute(builder: (context) {
                         return const LogIn();
                       }));
                     },

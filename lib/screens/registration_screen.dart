@@ -98,7 +98,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value==null||value.trim().isEmpty|| !value.contains("@")) {
+                            if (value==null||value.trim().isEmpty|| !value.contains("@")||!value.contains(".")) {
                               return 'Please enter valid email';
                             }
                             return null;
@@ -150,7 +150,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value==null||value.trim().length<5) {
+                            
+                            if (value==null || value.trim().length<5) {
                               return 'Please enter password of at least 5 characters long';
                             }
                             return null;
@@ -187,10 +188,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value!.isEmpty ||
-                                passwordController.text !=
-                                    confirmPasswordController.text) {
-                              return 'Please confirm password';
+                            if (value!.isEmpty ) {
+                              return 'Please enter password';
+                            }
+                            else if ( passwordController.text !=
+                                    confirmPasswordController.text){
+                               return 'Please enter valid confirm password';
                             }
                             return null;
                           },
@@ -235,7 +238,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     .createUser(Users(
                                         userName: uNameController.text,
                                         userEmail: emailController.text,
-                                        userPassword: passwordController.text))
+                                        userPassword: hashedPassword))
                                     .whenComplete(() {
                                   Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(builder: (context) {

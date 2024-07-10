@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:user_authentication_sqflite/database/user_database_helper.dart';
+import 'package:crypto/crypto.dart';
 import 'package:user_authentication_sqflite/model/users.dart';
 import 'package:user_authentication_sqflite/screens/home_screen.dart';
 import 'package:user_authentication_sqflite/screens/registration_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:user_authentication_sqflite/screens/splash_screen.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -24,6 +29,12 @@ class _LogInState extends State<LogIn> {
 
   final TextStyle labels = const TextStyle(
       color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w600);
+
+  Future<String> _hashPassword(String password) async {
+    final bytes = utf8.encode(password);
+    final digest = await sha256.convert(bytes);
+    return base64Encode(digest.bytes);
+  }
 
   login() async {
     var response = await db.loginUser(Users(
@@ -82,7 +93,7 @@ class _LogInState extends State<LogIn> {
                         TextFormField(
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter username';
+                              return 'Please enter valid username';
                             }
                             return null;
                           },
@@ -108,7 +119,7 @@ class _LogInState extends State<LogIn> {
                         TextFormField(
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter password';
+                              return 'Please enter valid password';
                             }
                             return null;
                           },
@@ -143,10 +154,30 @@ class _LogInState extends State<LogIn> {
                           height: 35,
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            var sharedPref =
+                                await SharedPreferences.getInstance();
+
+                            sharedPref.setBool(SplashPageState.KEYLOGIN, true);
                             FocusScope.of(context).unfocus();
                             if (formKey.currentState!.validate()) {
-                              login();
+                             // formKey.currentState!.reset();
+                              Fluttertoast.showToast(
+                                  msg: 'Login successful',
+                                  toastLength: Toast.LENGTH_SHORT);
+                              _hashPassword(passwordController.text)
+                                  .then((hashedPassword) {
+                                db
+                                    .loginUser(Users(
+                                        userName: uNameController.text,
+                                        userPassword: hashedPassword))
+                                    .whenComplete(() {
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(builder: (context) {
+                                    return const HomeScreen();
+                                  }));
+                                });
+                              });
                             }
                           },
                           style: const ButtonStyle(
@@ -160,7 +191,7 @@ class _LogInState extends State<LogIn> {
                                 ),
                               ),
                             ),
-                            elevation: WidgetStatePropertyAll(20),
+                            elevation: WidgetStatePropertyAll(10),
                             backgroundColor: WidgetStatePropertyAll(
                                 Color.fromARGB(255, 102, 133, 141)),
                           ),
@@ -173,7 +204,7 @@ class _LogInState extends State<LogIn> {
                           ),
                         ),
                         const SizedBox(
-                          height: 40,
+                          height: 10,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -215,7 +246,7 @@ class _LogInState extends State<LogIn> {
                           ],
                         ),
                         const SizedBox(
-                          height: 40,
+                          height: 60,
                         ),
                       ],
                     ),

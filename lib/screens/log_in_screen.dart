@@ -37,8 +37,12 @@ class _LogInState extends State<LogIn> {
   }
 
   login() async {
+    var sharedPref = await SharedPreferences.getInstance();
+    sharedPref.setBool(SplashPageState.KEYLOGIN, true);
+        var hashedPassword = await _hashPassword(passwordController.text);
+
     var response = await db.loginUser(Users(
-        userName: uNameController.text, userPassword: passwordController.text));
+        userName: uNameController.text, userPassword: hashedPassword));
     if (response == true) {
       if (!mounted) return;
       Fluttertoast.showToast(
@@ -154,30 +158,12 @@ class _LogInState extends State<LogIn> {
                           height: 35,
                         ),
                         ElevatedButton(
-                          onPressed: () async {
-                            var sharedPref =
-                                await SharedPreferences.getInstance();
-
-                            sharedPref.setBool(SplashPageState.KEYLOGIN, true);
+                          onPressed: ()  {
+                            
                             FocusScope.of(context).unfocus();
                             if (formKey.currentState!.validate()) {
                              // formKey.currentState!.reset();
-                              Fluttertoast.showToast(
-                                  msg: 'Login successful',
-                                  toastLength: Toast.LENGTH_SHORT);
-                              _hashPassword(passwordController.text)
-                                  .then((hashedPassword) {
-                                db
-                                    .loginUser(Users(
-                                        userName: uNameController.text,
-                                        userPassword: hashedPassword))
-                                    .whenComplete(() {
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(builder: (context) {
-                                    return const HomeScreen();
-                                  }));
-                                });
-                              });
+                             login();
                             }
                           },
                           style: const ButtonStyle(
